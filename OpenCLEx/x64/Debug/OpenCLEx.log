@@ -1,0 +1,6 @@
+﻿  OpenCLEx.c
+C:\Users\ngokh\Documents\GitHub\OpenCLAss2\OpenCLEx\OpenCLEx.c(162,22): warning C4013: 'minDistance' undefined; assuming extern returning int
+C:\Users\ngokh\Documents\GitHub\OpenCLAss2\OpenCLEx\OpenCLEx.c(179,15): warning C4013: 'printSolution' undefined; assuming extern returning int
+C:\Users\ngokh\Documents\GitHub\OpenCLAss2\OpenCLEx\OpenCLEx.c(250,39): warning C4267: '=': conversion from 'size_t' to 'cl_int', possible loss of data
+C:\Users\ngokh\Documents\GitHub\OpenCLAss2\OpenCLEx\OpenCLEx.c(199): warning C4716: 'printSolution': must return a value
+  OpenCLEx.vcxproj -> C:\Users\ngokh\Documents\GitHub\OpenCLAss2\x64\Debug\OpenCLEx.exe

@@ -18,29 +18,73 @@
 #include <CL/cl.h>
 #endif
 
-/* Find a GPU or CPU associated with the first available platform */
-cl_device_id create_device() {
+clock_t start, end;
+float time_used;
 
+/* Find a GPU or CPU associated with the first available platform */
+cl_device_id create_device(int type) {
+
+	char device_string[1024];
 	cl_platform_id platform;
 	cl_device_id dev;
-	int err;
+	int cpu, gpu, both;
 
 	/* Identify a platform */
-	err = clGetPlatformIDs(1, &platform, NULL);
-	if (err < 0) {
+	cpu = clGetPlatformIDs(1, &platform, NULL);
+	if (cpu < 0) {
 		perror("Couldn't identify a platform");
 		exit(1);
 	}
 
+	gpu = clGetPlatformIDs(1, &platform, NULL);
+	if (gpu < 0) {
+		perror("Couldn't identify a platform");
+		exit(1);
+	}
+
+	both = clGetPlatformIDs(1, &platform, NULL);
+	if (both < 0) {
+		perror("Couldn't identify a platform");
+		exit(1);
+	}
 	/* Access a device */
-	err = clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU, 1, &dev, NULL);
+	switch(type){
+		case 0:
+			cpu = clGetDeviceIDs(platform, CL_DEVICE_TYPE_CPU, 1, &dev, NULL);
+			if (cpu < 0) {
+				perror("Couldn't access CPU");
+				exit(1);
+			}
+			break;
+		case 1:
+			gpu = clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU, 1, &dev, NULL);
+			clGetDeviceInfo(dev, CL_DEVICE_NAME, sizeof(device_string), &device_string, NULL);
+			printf("OpenCL Supported GPU: %s\n", device_string);
+			if (gpu < 0) {
+				perror("Couldn't access GPU");
+				exit(1);
+			}
+			break;
+		case 2:
+			both = clGetDeviceIDs(platform, CL_DEVICE_TYPE_ALL, 1, &dev, NULL);
+			if (both < 0) {
+				perror("Couldn't access CPU and GPU");
+				exit(1);
+			}
+			break;
+		default:
+			perror("Couldn't access any devices");
+			exit(1);
+			break;
+	}
+	/*err = clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU, 1, &dev, NULL);
 	if (err == CL_DEVICE_NOT_FOUND) {
 		err = clGetDeviceIDs(platform, CL_DEVICE_TYPE_CPU, 1, &dev, NULL);
 	}
 	if (err < 0) {
 		perror("Couldn't access any devices");
 		exit(1);
-	}
+	}*/
 
 	return dev;
 }
@@ -177,7 +221,7 @@ int main() {
 	}
 
 	/* Create device and context */
-	device = create_device();
+	device = create_device(1); //0 = cpu, 1 = gpu, 2 = both.
 	context = clCreateContext(NULL, 1, &device, NULL, NULL, &err);
 	if (err < 0) {
 		perror("Couldn't create a context");
@@ -185,9 +229,22 @@ int main() {
 	}
 
 	/* Build program */
+	start = clock();
+
+	//dijkstra(graph, 0);
 	program = build_program(context, device, PROGRAM_FILE);
 
 	/* Create data buffer */
+	int graph[V][V] = { { 0, 4, 0, 0, 0, 0, 0, 8, 0 },
+					{ 4, 0, 8, 0, 0, 0, 0, 11, 0 },
+					{ 0, 8, 0, 7, 0, 4, 0, 0, 2 },
+					{ 0, 0, 7, 0, 9, 14, 0, 0, 0 },
+					{ 0, 0, 0, 9, 0, 10, 0, 0, 0 },
+					{ 0, 0, 4, 14, 10, 0, 2, 0, 0 },
+					{ 0, 0, 0, 0, 0, 2, 0, 1, 6 },
+					{ 8, 11, 0, 0, 0, 0, 1, 0, 7 },
+					{ 0, 0, 2, 0, 0, 0, 6, 7, 0 } };
+	int src = 0;
 	global_size = 8;
 	local_size = 4;
 	num_groups = global_size / local_size;
@@ -199,7 +256,6 @@ int main() {
 		perror("Couldn't create a buffer");
 		exit(1);
 	};
-
 	/* Create a command queue */
 	queue = clCreateCommandQueue(context, device, 0, &err);
 	if (err < 0) {
@@ -259,17 +315,13 @@ int main() {
 	clReleaseProgram(program);
 	clReleaseContext(context);
 
-	int graph[V][V] = { { 0, 4, 0, 0, 0, 0, 0, 8, 0 },
-						{ 4, 0, 8, 0, 0, 0, 0, 11, 0 },
-						{ 0, 8, 0, 7, 0, 4, 0, 0, 2 },
-						{ 0, 0, 7, 0, 9, 14, 0, 0, 0 },
-						{ 0, 0, 0, 9, 0, 10, 0, 0, 0 },
-						{ 0, 0, 4, 14, 10, 0, 2, 0, 0 },
-						{ 0, 0, 0, 0, 0, 2, 0, 1, 6 },
-						{ 8, 11, 0, 0, 0, 0, 1, 0, 7 },
-						{ 0, 0, 2, 0, 0, 0, 6, 7, 0 } };
+	
 
-	dijkstra(graph, 0);
+	
 
+	end = clock();
+	time_used = ((float)(end = start));
+
+	printf("Time Used: %f",time_used);
 	return 0;
 }
