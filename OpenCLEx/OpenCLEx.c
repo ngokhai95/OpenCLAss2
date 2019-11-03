@@ -235,21 +235,12 @@ int main() {
 	program = build_program(context, device, PROGRAM_FILE);
 
 	/* Create data buffer */
-	int graph[V][V] = { { 0, 4, 0, 0, 0, 0, 0, 8, 0 },
-					{ 4, 0, 8, 0, 0, 0, 0, 11, 0 },
-					{ 0, 8, 0, 7, 0, 4, 0, 0, 2 },
-					{ 0, 0, 7, 0, 9, 14, 0, 0, 0 },
-					{ 0, 0, 0, 9, 0, 10, 0, 0, 0 },
-					{ 0, 0, 4, 14, 10, 0, 2, 0, 0 },
-					{ 0, 0, 0, 0, 0, 2, 0, 1, 6 },
-					{ 8, 11, 0, 0, 0, 0, 1, 0, 7 },
-					{ 0, 0, 2, 0, 0, 0, 6, 7, 0 } };
-	int src = 0;
+
 	global_size = 8;
 	local_size = 4;
 	num_groups = global_size / local_size;
 	input_buffer = clCreateBuffer(context, CL_MEM_READ_ONLY |
-		CL_MEM_COPY_HOST_PTR, ARRAY_SIZE * sizeof(float), data, &err);
+		CL_MEM_COPY_HOST_PTR, V * V * sizeof(int), data, &err);
 	sum_buffer = clCreateBuffer(context, CL_MEM_READ_WRITE |
 		CL_MEM_COPY_HOST_PTR, num_groups * sizeof(float), sum, &err);
 	if (err < 0) {
