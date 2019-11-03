@@ -6,6 +6,6 @@ C:\Users\ngokh\Documents\GitHub\OpenCLAss2\OpenCLEx\OpenCLEx.c(164,24): warning 
 C:\Users\ngokh\Documents\GitHub\OpenCLAss2\OpenCLEx\OpenCLEx.c(167,69): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
 C:\Users\ngokh\Documents\GitHub\OpenCLAss2\OpenCLEx\OpenCLEx.c(170,28): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
 C:\Users\ngokh\Documents\GitHub\OpenCLAss2\OpenCLEx\OpenCLEx.c(206,25): warning C4305: '=': truncation from 'double' to 'float'
-C:\Users\ngokh\Documents\GitHub\OpenCLAss2\OpenCLEx\OpenCLEx.c(235,39): warning C4267: '=': conversion from 'size_t' to 'cl_int', possible loss of data
+C:\Users\ngokh\Documents\GitHub\OpenCLAss2\OpenCLEx\OpenCLEx.c(239,39): warning C4267: '=': conversion from 'size_t' to 'cl_int', possible loss of data
 C:\Users\ngokh\Documents\GitHub\OpenCLAss2\OpenCLEx\OpenCLEx.c(182): warning C4716: 'printSolution': must return a value
   OpenCLEx.vcxproj -> C:\Users\ngokh\Documents\GitHub\OpenCLAss2\x64\Debug\OpenCLEx.exe

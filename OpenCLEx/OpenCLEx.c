@@ -178,7 +178,7 @@ int printSolution()
 {
 	printf("Bullet hit the ground!\n");
 	printf("Final Bullet Position:{%f,%f,%f}\n", positionBullet.x, positionBullet.y, positionBullet.z);
-	printf("Time to get to the target:%f\n",shootTime);
+	printf("Time till hit the ground:%f\n",shootTime);
 }
 
 int main() {
@@ -208,6 +208,10 @@ int main() {
 	velocity = 10;
 	alpha = 75;
 	gamma = 50;
+
+	printf("Shooting bullet with velocity %f\n", velocity);
+	printf("Vertical angle: %f degree, Horizontal angle: %f degree\n", alpha, gamma);
+	printf("Original Position:{%f,%f,%f}\n", positionBullet.x, positionBullet.y, positionBullet.z);
 	while (positionBullet.y > 0)
 	{
 		Shoot();
