@@ -2,7 +2,9 @@
 #define PROGRAM_FILE "add_numbers.cl"
 #define KERNEL_FUNC "add_numbers"
 #define ARRAY_SIZE 64
-#define V 9 
+#define PI 3.14
+#define deltaTime 0.02
+#define g 9.8
 
 #include <math.h>
 #include <stdio.h>
@@ -18,8 +20,20 @@
 #include <CL/cl.h>
 #endif
 
+struct Vector3
+{
+	float x;
+	float y;
+	float z;
+};
+
 clock_t start, end;
+struct Vector3 position;
+struct Vector3 positionBullet;
 float time_used;
+float velocity, velocityH, velocityL, velocityV, alpha, gamma, angle;
+float shootTime;
+
 
 /* Find a GPU or CPU associated with the first available platform */
 cl_device_id create_device(int type) {
@@ -140,62 +154,31 @@ cl_program build_program(cl_context ctx, cl_device_id dev, const char* filename)
 	return program;
 }
 
-void dijkstra(int graph[V][V], int src)
+void Shoot()
 {
-	int dist[V]; // The output array.  dist[i] will hold the shortest 
-	// distance from src to i 
+	velocityH = velocity * sin(alpha * PI / 180) * cos(gamma * PI / 180);
+	velocityV = velocity * cos(alpha * PI / 180);
+	velocityL = velocity * sin(alpha * PI / 180) * sin(gamma * PI / 180);
+	//velocityV = velocity * Sin(angle);
+	//velocityH = velocity * Cos(angle);
+	shootTime += deltaTime;
 
-	bool sptSet[V]; // sptSet[i] will be true if vertex i is included in shortest 
-	// path tree or shortest distance from src to i is finalized 
+	position.x += velocityH * shootTime;
+	position.y += velocityV * shootTime - (g * pow(shootTime, 2) * 0.5);
+	position.z += velocityL * shootTime;
 
-	// Initialize all distances as INFINITE and stpSet[] as false 
-	for (int i = 0; i < V; i++)
-		dist[i] = INT_MAX, sptSet[i] = false;
-
-	// Distance of source vertex from itself is always 0 
-	dist[src] = 0;
-
-	// Find shortest path for all vertices 
-	for (int count = 0; count < V - 1; count++) {
-		// Pick the minimum distance vertex from the set of vertices not 
-		// yet processed. u is always equal to src in the first iteration. 
-		int u = minDistance(dist, sptSet);
-
-		// Mark the picked vertex as processed 
-		sptSet[u] = true;
-
-		// Update dist value of the adjacent vertices of the picked vertex. 
-		for (int v = 0; v < V; v++)
-
-			// Update dist[v] only if is not in sptSet, there is an edge from 
-			// u to v, and total weight of path from src to  v through u is 
-			// smaller than current value of dist[v] 
-			if (!sptSet[v] && graph[u][v] && dist[u] != INT_MAX
-				&& dist[u] + graph[u][v] < dist[v])
-				dist[v] = dist[u] + graph[u][v];
-	}
-
-	// print the constructed distance array 
-	printSolution(dist);
+	velocityV -= g * shootTime;
+	positionBullet.x += position.x;
+	positionBullet.y += position.y;
+	positionBullet.z += position.z;
+	printf("Bullet position:{%f,%f,%f}\n", positionBullet.x, positionBullet.y, positionBullet.z);
 }
 
-int minDistance(int dist[], bool sptSet[])
+int printSolution()
 {
-	// Initialize min value 
-	int min = INT_MAX, min_index;
-
-	for (int v = 0; v < V; v++)
-		if (sptSet[v] == false && dist[v] <= min)
-			min = dist[v], min_index = v;
-
-	return min_index;
-}
-
-int printSolution(int dist[])
-{
-	printf("Vertex \t\t Distance from Source\n");
-	for (int i = 0; i < V; i++)
-		printf("%d \t\t %d\n", i, dist[i]);
+	printf("Bullet hit the ground!\n");
+	printf("Final Bullet Position:{%f,%f,%f}\n", positionBullet.x, positionBullet.y, positionBullet.z);
+	printf("Time to get to the target:%f\n",shootTime);
 }
 
 int main() {
@@ -219,6 +202,17 @@ int main() {
 	for (i = 0; i < ARRAY_SIZE; i++) {
 		data[i] = 1.0f * i;
 	}
+	positionBullet.x = 10;
+	positionBullet.y = 0.01;
+	positionBullet.z = 10;
+	velocity = 10;
+	alpha = 75;
+	gamma = 50;
+	while (positionBullet.y > 0)
+	{
+		Shoot();
+	}
+	printSolution();
 
 	/* Create device and context */
 	device = create_device(1); //0 = cpu, 1 = gpu, 2 = both.
@@ -240,7 +234,7 @@ int main() {
 	local_size = 4;
 	num_groups = global_size / local_size;
 	input_buffer = clCreateBuffer(context, CL_MEM_READ_ONLY |
-		CL_MEM_COPY_HOST_PTR, V * V * sizeof(int), data, &err);
+		CL_MEM_COPY_HOST_PTR, ARRAY_SIZE * sizeof(float), data, &err);
 	sum_buffer = clCreateBuffer(context, CL_MEM_READ_WRITE |
 		CL_MEM_COPY_HOST_PTR, num_groups * sizeof(float), sum, &err);
 	if (err < 0) {
