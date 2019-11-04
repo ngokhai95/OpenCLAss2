@@ -18,6 +18,7 @@
 #ifdef MAC
 #else
 #include <CL/cl.h>
+#include <CL/cl.h>
 #endif
 
 struct Vector3
@@ -195,7 +196,9 @@ int main() {
 	/* Data and buffers */
 	float data[ARRAY_SIZE];
 	float sum[2], total, actual_sum;
-	cl_mem input_buffer, sum_buffer;
+	float input[3];
+	float output[3];
+	cl_mem input_buffer, output_buffer;
 	cl_int num_groups;
 
 	/* Initialize data */
@@ -205,6 +208,9 @@ int main() {
 	positionBullet.x = 10;
 	positionBullet.y = 0.01;
 	positionBullet.z = 10;
+	input[0] = positionBullet.x;
+	input[1] = positionBullet.y;
+	input[2] = positionBullet.z;
 	velocity = 10;
 	alpha = 75;
 	gamma = 50;
@@ -212,11 +218,11 @@ int main() {
 	printf("Shooting bullet with velocity %f\n", velocity);
 	printf("Vertical angle: %f degree, Horizontal angle: %f degree\n", alpha, gamma);
 	printf("Original Position:{%f,%f,%f}\n", positionBullet.x, positionBullet.y, positionBullet.z);
-	while (positionBullet.y > 0)
+	/*while (positionBullet.y > 0)
 	{
 		Shoot();
 	}
-	printSolution();
+	printSolution();*/
 
 	/* Create device and context */
 	device = create_device(1); //0 = cpu, 1 = gpu, 2 = both.
@@ -238,9 +244,9 @@ int main() {
 	local_size = 4;
 	num_groups = global_size / local_size;
 	input_buffer = clCreateBuffer(context, CL_MEM_READ_ONLY |
-		CL_MEM_COPY_HOST_PTR, ARRAY_SIZE * sizeof(float), data, &err);
-	sum_buffer = clCreateBuffer(context, CL_MEM_READ_WRITE |
-		CL_MEM_COPY_HOST_PTR, num_groups * sizeof(float), sum, &err);
+		CL_MEM_COPY_HOST_PTR, 3 * sizeof(float), input, &err);
+	output_buffer = clCreateBuffer(context, CL_MEM_READ_WRITE |
+		CL_MEM_COPY_HOST_PTR, 3 * sizeof(float), output, &err);
 	if (err < 0) {
 		perror("Couldn't create a buffer");
 		exit(1);
@@ -262,7 +268,7 @@ int main() {
 	/* Create kernel arguments */
 	err = clSetKernelArg(kernel, 0, sizeof(cl_mem), &input_buffer);
 	err |= clSetKernelArg(kernel, 1, local_size * sizeof(float), NULL);
-	err |= clSetKernelArg(kernel, 2, sizeof(cl_mem), &sum_buffer);
+	err |= clSetKernelArg(kernel, 2, sizeof(cl_mem), &output_buffer);
 	if (err < 0) {
 		perror("Couldn't create a kernel argument");
 		exit(1);
@@ -277,15 +283,18 @@ int main() {
 	}
 
 	/* Read the kernel's output */
-	err = clEnqueueReadBuffer(queue, sum_buffer, CL_TRUE, 0,
-		sizeof(sum), sum, 0, NULL, NULL);
+	err = clEnqueueReadBuffer(queue, output_buffer, CL_TRUE, 0,
+		sizeof(output), output, 0, NULL, NULL);
 	if (err < 0) {
 		perror("Couldn't read the buffer");
 		exit(1);
 	}
 
+	printf("Bullet hit the ground!\n");
+	printf("Final Bullet Position:{%f,%f,%f}\n", output[0], output[1], output[2]);
+	printf("Time till hit the ground:%f\n", shootTime);
 	/* Check result */
-	total = 0.0f;
+	/*total = 0.0f;
 	for (j = 0; j < num_groups; j++) {
 		total += sum[j];
 	}
@@ -294,11 +303,11 @@ int main() {
 	if (fabs(total - actual_sum) > 0.01 * fabs(actual_sum))
 		printf("Check failed.\n");
 	else
-		printf("Check passed.\n");
+		printf("Check passed.\n");*/
 
 	/* Deallocate resources */
 	clReleaseKernel(kernel);
-	clReleaseMemObject(sum_buffer);
+	clReleaseMemObject(output_buffer);
 	clReleaseMemObject(input_buffer);
 	clReleaseCommandQueue(queue);
 	clReleaseProgram(program);
