@@ -34,7 +34,7 @@ struct Vector3 positionBullet;
 float time_used;
 float velocity, velocityH, velocityL, velocityV, alpha, gamma, angle;
 float shootTime;
-
+int numShoot;
 
 /* Find a GPU or CPU associated with the first available platform */
 cl_device_id create_device(int type) {
@@ -157,11 +157,6 @@ cl_program build_program(cl_context ctx, cl_device_id dev, const char* filename)
 
 void Shoot()
 {
-	velocityH = velocity * sin(alpha * PI / 180) * cos(gamma * PI / 180);
-	velocityV = velocity * cos(alpha * PI / 180);
-	velocityL = velocity * sin(alpha * PI / 180) * sin(gamma * PI / 180);
-	//velocityV = velocity * Sin(angle);
-	//velocityH = velocity * Cos(angle);
 	shootTime += deltaTime;
 
 	position.x += velocityH * shootTime;
@@ -172,17 +167,24 @@ void Shoot()
 	positionBullet.x += position.x;
 	positionBullet.y += position.y;
 	positionBullet.z += position.z;
-	printf("Bullet position:{%f,%f,%f}\n", positionBullet.x, positionBullet.y, positionBullet.z);
+	//printf("Bullet position:{%f,%f,%f}\n", positionBullet.x, positionBullet.y, positionBullet.z);
 }
 
-int printSolution()
+int print(int n, float v, float alpha, float gamma, float x, float y, float z)
 {
-	printf("Bullet hit the ground!\n");
-	printf("Final Bullet Position:{%f,%f,%f}\n", positionBullet.x, positionBullet.y, positionBullet.z);
-	printf("Time till hit the ground:%f\n",shootTime);
+	printf("Shooting bullet with velocity %f for %d times\n", v, n);
+	printf("Vertical angle: %f degree, Horizontal angle: %f degree\n", alpha, gamma);
+	printf("Original Position:{%f,%f,%f}\n", x, y, z);
 }
 
-int main() {
+int printResult(int n, float x, float y, float z)
+{
+	printf("%d bullets hit the ground!\n", n);
+	printf("Final Bullet Position:{%f,%f,%f}\n", x, y, z);
+}
+
+int main() 
+{
 
 	/* OpenCL structures */
 	cl_device_id device;
@@ -194,36 +196,43 @@ int main() {
 	size_t local_size, global_size;
 
 	/* Data and buffers */
-	float data[ARRAY_SIZE];
-	float sum[2], total, actual_sum;
-	float input[3];
-	float output[3];
+	float input[7];
+	float output[6];
 	cl_mem input_buffer, output_buffer;
-	cl_int num_groups;
 
 	/* Initialize data */
-	for (i = 0; i < ARRAY_SIZE; i++) {
-		data[i] = 1.0f * i;
-	}
+	srand(time(NULL));
 	positionBullet.x = 10;
 	positionBullet.y = 0.01;
 	positionBullet.z = 10;
-	input[0] = positionBullet.x;
-	input[1] = positionBullet.y;
-	input[2] = positionBullet.z;
 	velocity = 10;
-	alpha = 75;
+	alpha = 70;
 	gamma = 50;
-
-	printf("Shooting bullet with velocity %f\n", velocity);
-	printf("Vertical angle: %f degree, Horizontal angle: %f degree\n", alpha, gamma);
-	printf("Original Position:{%f,%f,%f}\n", positionBullet.x, positionBullet.y, positionBullet.z);
-	/*while (positionBullet.y > 0)
+	numShoot = 100000000;
+	input[0] = 10;
+	input[1] = 0.01;
+	input[2] = 10;
+	input[3] = velocity;
+	input[4] = alpha;
+	input[5] = gamma;
+	input[6] = numShoot;
+	velocityH = velocity * sin(alpha * PI / 180) * cos(gamma * PI / 180);
+	velocityV = velocity * cos(alpha * PI / 180);
+	velocityL = velocity * sin(alpha * PI / 180) * sin(gamma * PI / 180);
+	start = clock();
+	print(numShoot, velocity, alpha, gamma, positionBullet.x, positionBullet.y, positionBullet.z);
+	for (int i = 0; i < numShoot; i++)
 	{
-		Shoot();
+		while (positionBullet.y > 0)
+		{
+			Shoot();
+		}
 	}
-	printSolution();*/
-
+	printResult(numShoot,positionBullet.x,positionBullet.y,positionBullet.z);
+	end = clock();
+	time_used = ((float)(end - start));
+	
+	printf("Time Used: %f\n", time_used);
 	/* Create device and context */
 	device = create_device(1); //0 = cpu, 1 = gpu, 2 = both.
 	context = clCreateContext(NULL, 1, &device, NULL, NULL, &err);
@@ -234,19 +243,17 @@ int main() {
 
 	/* Build program */
 	start = clock();
-
-	//dijkstra(graph, 0);
 	program = build_program(context, device, PROGRAM_FILE);
 
 	/* Create data buffer */
+	print(input[6], input[3], input[4], input[5], input[0], input[1], input[2]);
 
 	global_size = 8;
 	local_size = 4;
-	num_groups = global_size / local_size;
 	input_buffer = clCreateBuffer(context, CL_MEM_READ_ONLY |
-		CL_MEM_COPY_HOST_PTR, 3 * sizeof(float), input, &err);
+		CL_MEM_COPY_HOST_PTR, 7 * sizeof(float), input, &err);
 	output_buffer = clCreateBuffer(context, CL_MEM_READ_WRITE |
-		CL_MEM_COPY_HOST_PTR, 3 * sizeof(float), output, &err);
+		CL_MEM_COPY_HOST_PTR, 6 * sizeof(float), output, &err);
 	if (err < 0) {
 		perror("Couldn't create a buffer");
 		exit(1);
@@ -273,7 +280,6 @@ int main() {
 		perror("Couldn't create a kernel argument");
 		exit(1);
 	}
-
 	/* Enqueue kernel */
 	err = clEnqueueNDRangeKernel(queue, kernel, 1, NULL, &global_size,
 		&local_size, 0, NULL, NULL);
@@ -290,36 +296,17 @@ int main() {
 		exit(1);
 	}
 
-	printf("Bullet hit the ground!\n");
-	printf("Final Bullet Position:{%f,%f,%f}\n", output[0], output[1], output[2]);
-	printf("Time till hit the ground:%f\n", shootTime);
 	/* Check result */
-	/*total = 0.0f;
-	for (j = 0; j < num_groups; j++) {
-		total += sum[j];
-	}
-	actual_sum = 1.0f * ARRAY_SIZE / 2 * (ARRAY_SIZE - 1);
-	printf("Computed sum = %.1f.\n", total);
-	if (fabs(total - actual_sum) > 0.01 * fabs(actual_sum))
-		printf("Check failed.\n");
-	else
-		printf("Check passed.\n");*/
+	end = clock();
+	time_used = ((float)(end - start));
+	printResult(numShoot, output[0], output[1], output[2]);
+	printf("Time Used: %f\n", time_used);
 
-	/* Deallocate resources */
 	clReleaseKernel(kernel);
 	clReleaseMemObject(output_buffer);
 	clReleaseMemObject(input_buffer);
 	clReleaseCommandQueue(queue);
 	clReleaseProgram(program);
 	clReleaseContext(context);
-
-	
-
-	
-
-	end = clock();
-	time_used = ((float)(end = start));
-
-	printf("Time Used: %f",time_used);
-	return 0;
+return 0;
 }
