@@ -1,4 +1,5 @@
 ﻿  OpenCLEx.c
+C:\Users\ngokh\Documents\GitHub\OpenCLAss2\OpenCLEx\OpenCLEx.c(43,7): warning C4101: 'device_string': unreferenced local variable
 C:\Users\ngokh\Documents\GitHub\OpenCLAss2\OpenCLEx\OpenCLEx.c(160,24): warning C4305: '+=': truncation from 'double' to 'float'
 C:\Users\ngokh\Documents\GitHub\OpenCLAss2\OpenCLEx\OpenCLEx.c(163,69): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
 C:\Users\ngokh\Documents\GitHub\OpenCLAss2\OpenCLEx\OpenCLEx.c(166,28): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
@@ -14,4 +15,5 @@ C:\Users\ngokh\Documents\GitHub\OpenCLAss2\OpenCLEx\OpenCLEx.c(195,12): warning 
 C:\Users\ngokh\Documents\GitHub\OpenCLAss2\OpenCLEx\OpenCLEx.c(195,9): warning C4101: 'i': unreferenced local variable
 C:\Users\ngokh\Documents\GitHub\OpenCLAss2\OpenCLEx\OpenCLEx.c(178): warning C4716: 'print': must return a value
 C:\Users\ngokh\Documents\GitHub\OpenCLAss2\OpenCLEx\OpenCLEx.c(184): warning C4716: 'printResult': must return a value
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.CppBuild.targets(1266,5): warning MSB8012: TargetPath(C:\Users\ngokh\Documents\GitHub\OpenCLAss2\x64\Debug\OpenCLEx.exe) does not match the Linker's OutputFile property value (). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Link.OutputFile).
   OpenCLEx.vcxproj -> C:\Users\ngokh\Documents\GitHub\OpenCLAss2\x64\Debug\OpenCLEx.exe

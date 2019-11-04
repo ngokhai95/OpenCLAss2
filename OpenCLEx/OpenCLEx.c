@@ -1,4 +1,5 @@
 #define _CRT_SECURE_NO_WARNINGS
+#define CL_USE_DEPRECATED_OPENCL_1_2_APIS
 #define PROGRAM_FILE "add_numbers.cl"
 #define KERNEL_FUNC "add_numbers"
 #define ARRAY_SIZE 64
@@ -43,29 +44,28 @@ cl_device_id create_device(int type) {
 	cl_platform_id platform;
 	cl_device_id dev;
 	int cpu, gpu, both;
-
-	/* Identify a platform */
 	cpu = clGetPlatformIDs(1, &platform, NULL);
 	if (cpu < 0) {
 		perror("Couldn't identify a platform");
 		exit(1);
 	}
-
 	gpu = clGetPlatformIDs(1, &platform, NULL);
 	if (gpu < 0) {
 		perror("Couldn't identify a platform");
 		exit(1);
 	}
-
 	both = clGetPlatformIDs(1, &platform, NULL);
 	if (both < 0) {
 		perror("Couldn't identify a platform");
 		exit(1);
 	}
 	/* Access a device */
-	switch(type){
+	switch(type)
+	{
 		case 0:
 			cpu = clGetDeviceIDs(platform, CL_DEVICE_TYPE_CPU, 1, &dev, NULL);
+			//clGetDeviceInfo(dev, CL_DEVICE_NAME, sizeof(device_string), &device_string, NULL);
+			//printf("OpenCL Supported CPU: %s\n", device_string);
 			if (cpu < 0) {
 				perror("Couldn't access CPU");
 				exit(1);
@@ -73,8 +73,8 @@ cl_device_id create_device(int type) {
 			break;
 		case 1:
 			gpu = clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU, 1, &dev, NULL);
-			clGetDeviceInfo(dev, CL_DEVICE_NAME, sizeof(device_string), &device_string, NULL);
-			printf("OpenCL Supported GPU: %s\n", device_string);
+			//clGetDeviceInfo(dev, CL_DEVICE_NAME, sizeof(device_string), &device_string, NULL);
+			//printf("OpenCL Supported GPU: %s\n", device_string);
 			if (gpu < 0) {
 				perror("Couldn't access GPU");
 				exit(1);
@@ -234,7 +234,7 @@ int main()
 	
 	printf("Time Used: %f\n", time_used);
 	/* Create device and context */
-	device = create_device(1); //0 = cpu, 1 = gpu, 2 = both.
+	device = create_device(0); //0 = cpu, 1 = gpu, 2 = both.
 	context = clCreateContext(NULL, 1, &device, NULL, NULL, &err);
 	if (err < 0) {
 		perror("Couldn't create a context");
