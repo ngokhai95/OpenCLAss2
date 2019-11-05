@@ -61,7 +61,8 @@ cl_device_id create_device(int type) {
 			}
 			cpu = clGetDeviceIDs(platform, CL_DEVICE_TYPE_CPU, 1, &dev, NULL);
 			clGetDeviceInfo(dev, CL_DEVICE_NAME, sizeof(device_string), &device_string, NULL);
-			printf("OpenCL Supported CPU: %s\n", device_string);
+            printf("\n");
+			printf("Run using Supported CPU: %s!\n", device_string);
 			break;
 		case 1:
 			gpu = clGetPlatformIDs(1, &platform, NULL);
@@ -75,7 +76,8 @@ cl_device_id create_device(int type) {
 			}
 			gpu = clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU, 1, &dev, NULL);
 			clGetDeviceInfo(dev, CL_DEVICE_NAME, sizeof(device_string), &device_string, NULL);
-			printf("OpenCL Supported GPU: %s\n", device_string);
+            printf("\n");
+			printf("Run using Supported GPU: %s!\n", device_string);
 			break;
 		case 2:
 			both = clGetPlatformIDs(1, &platform, NULL);
@@ -94,14 +96,6 @@ cl_device_id create_device(int type) {
 			exit(1);
 			break;
 	}
-	/*err = clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU, 1, &dev, NULL);
-	if (err == CL_DEVICE_NOT_FOUND) {
-		err = clGetDeviceIDs(platform, CL_DEVICE_TYPE_CPU, 1, &dev, NULL);
-	}
-	if (err < 0) {
-		perror("Couldn't access any devices");
-		exit(1);
-	}*/
 
 	return dev;
 }
@@ -169,13 +163,11 @@ void Shoot()
 	positionBullet.x += position.x;
 	positionBullet.y += position.y;
 	positionBullet.z += position.z;
-	//printf("Bullet position:{%f,%f,%f}\n", positionBullet.x, positionBullet.y, positionBullet.z);
 }
 
-int print(int n, float v, float alpha, float gama, float x, float y, float z)
+int print(float v, float alpha, float gama, float x, float y, float z)
 {
-	printf("%d boats shooting bullet with velocity %f\n", n, v);
-	printf("Vertical angle: %f degree, Horizontal angle: %f degree\n", alpha, gama);
+	printf("Velocity: %f, Vertical angle: %f degree, Horizontal angle: %f degree\n", v, alpha, gama);
 	printf("Original Position:{%f,%f,%f}\n", x, y, z);
 }
 
@@ -187,12 +179,15 @@ int printResult(int n, float x, float y, float z)
 
 void runSerially()
 {
+    printf("\n");
+    printf("Run Serially!\n");
 	positionBullet = originalPosition;
 	velocityH = velocity * sin(alpha * PI / 180) * cos(gama * PI / 180);
 	velocityV = velocity * cos(alpha * PI / 180);
 	velocityL = velocity * sin(alpha * PI / 180) * sin(gama * PI / 180);
 	start = clock();
-	print(numBoat, velocity, alpha, gama, positionBullet.x, positionBullet.y, positionBullet.z);
+	print(velocity, alpha, gama, positionBullet.x, positionBullet.y, positionBullet.z);
+    numBoat = pow(numBoat,5);
 	for (int i = 0; i < numBoat; i++)
 	{
 		while (positionBullet.y > 0)
@@ -244,8 +239,7 @@ void runOpenCL(int mode, float numBoat, float velocity, float alpha, float gama,
 	program = build_program(context, device, PROGRAM_FILE);
 
 	/* Create data buffer */
-	print(input[6], input[3], input[4], input[5], input[0], input[1], input[2]);
-
+	print(input[3], input[4], input[5], input[0], input[1], input[2]);
 	global_size = 8;
 	local_size = 1;
 	input_buffer = clCreateBuffer(context, CL_MEM_READ_ONLY |
@@ -312,13 +306,14 @@ void runOpenCL(int mode, float numBoat, float velocity, float alpha, float gama,
 int main() 
 {
 	srand(time(NULL));
-	originalPosition.x = 10;
-	originalPosition.y = 0.01;
-	originalPosition.z = 10;
-	velocity = 10;
-	alpha = 70;
-	gama = 50;
-	numBoat = 100000000;
+	originalPosition.x = rand() % 100;
+	originalPosition.y = (float)(rand() % 10 + 1) / 100;
+	originalPosition.z = rand() % 100;
+	velocity = rand() % (100 - 50 + 1) + 50;
+	alpha = rand() % (170 - 10 + 1) + 10;
+	gama = rand() % (170 - 10 + 1) + 10;
+	numBoat = rand() % (35 - 25 + 1) + 25;
+    printf("%d boats shooting bullets!\n", numBoat);
 	runSerially();
 	runOpenCL(0, numBoat, velocity, alpha, gama, originalPosition.x, originalPosition.y, originalPosition.z);
 	runOpenCL(1, numBoat, velocity, alpha, gama, originalPosition.x, originalPosition.y, originalPosition.z);
