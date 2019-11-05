@@ -117,7 +117,7 @@ cl_program build_program(cl_context ctx, cl_device_id dev, const char* filename)
 	int err;
 
 	/* Read program file and place content into buffer */
-	program_handle = fopen(filename, "rb");
+	program_handle = fopen(filename, "r");
 	if (program_handle == NULL) {
 		perror("Couldn't find the program file");
 		exit(1);
@@ -175,14 +175,14 @@ void Shoot()
 
 int print(int n, float v, float alpha, float gama, float x, float y, float z)
 {
-	printf("%d boats shooting bullet with velocity %f\n", v, n);
+	printf("%d boats shooting bullet with velocity %f\n", n, v);
 	printf("Vertical angle: %f degree, Horizontal angle: %f degree\n", alpha, gama);
 	printf("Original Position:{%f,%f,%f}\n", x, y, z);
 }
 
 int printResult(int n, float x, float y, float z)
 {
-	printf("Bullets hit the ground!\n", n);
+	printf("Bullets hit the ground!\n");
 	printf("Final Bullet Position:{%f,%f,%f}\n", x, y, z);
 }
 
