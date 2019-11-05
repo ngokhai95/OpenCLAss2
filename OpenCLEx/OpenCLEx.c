@@ -17,8 +17,9 @@
 
 
 #ifdef MAC
+#include <OpenCL/opencl.h>
 #else
-#include <CL/cl.h>
+//#include <CL/cl.h>
 #endif
 
 struct Vector3
@@ -32,7 +33,7 @@ clock_t start, end;
 struct Vector3 position;
 struct Vector3 positionBullet;
 float time_used;
-float velocity, velocityH, velocityL, velocityV, alpha, gamma, angle;
+float velocity, velocityH, velocityL, velocityV, alpha, gama, angle;
 float shootTime;
 int numShoot;
 
@@ -172,10 +173,10 @@ void Shoot()
 	//printf("Bullet position:{%f,%f,%f}\n", positionBullet.x, positionBullet.y, positionBullet.z);
 }
 
-int print(int n, float v, float alpha, float gamma, float x, float y, float z)
+int print(int n, float v, float alpha, float gama, float x, float y, float z)
 {
 	printf("Shooting bullet with velocity %f for %d times\n", v, n);
-	printf("Vertical angle: %f degree, Horizontal angle: %f degree\n", alpha, gamma);
+	printf("Vertical angle: %f degree, Horizontal angle: %f degree\n", alpha, gama);
 	printf("Original Position:{%f,%f,%f}\n", x, y, z);
 }
 
@@ -194,7 +195,7 @@ int main()
 	cl_program program;
 	cl_kernel kernel;
 	cl_command_queue queue;
-	cl_int i, j, err;
+	cl_int err;
 	size_t local_size, global_size;
 
 	/* Data and buffers */
@@ -209,20 +210,20 @@ int main()
 	positionBullet.z = 10;
 	velocity = 10;
 	alpha = 70;
-	gamma = 50;
+	gama = 50;
 	numShoot = 100000000;
 	input[0] = 10;
 	input[1] = 0.01;
 	input[2] = 10;
 	input[3] = velocity;
 	input[4] = alpha;
-	input[5] = gamma;
+	input[5] = gama;
 	input[6] = numShoot;
-	velocityH = velocity * sin(alpha * PI / 180) * cos(gamma * PI / 180);
+	velocityH = velocity * sin(alpha * PI / 180) * cos(gama * PI / 180);
 	velocityV = velocity * cos(alpha * PI / 180);
-	velocityL = velocity * sin(alpha * PI / 180) * sin(gamma * PI / 180);
+	velocityL = velocity * sin(alpha * PI / 180) * sin(gama * PI / 180);
 	start = clock();
-	print(numShoot, velocity, alpha, gamma, positionBullet.x, positionBullet.y, positionBullet.z);
+	print(numShoot, velocity, alpha, gama, positionBullet.x, positionBullet.y, positionBullet.z);
 	for (int i = 0; i < numShoot; i++)
 	{
 		while (positionBullet.y > 0)
