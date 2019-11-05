@@ -2,18 +2,19 @@
 C:\Users\ngokh\Documents\GitHub\OpenCLAss2\OpenCLEx\OpenCLEx.c(162,24): warning C4305: '+=': truncation from 'double' to 'float'
 C:\Users\ngokh\Documents\GitHub\OpenCLAss2\OpenCLEx\OpenCLEx.c(165,69): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
 C:\Users\ngokh\Documents\GitHub\OpenCLAss2\OpenCLEx\OpenCLEx.c(168,28): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
-C:\Users\ngokh\Documents\GitHub\OpenCLAss2\OpenCLEx\OpenCLEx.c(177,9): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 1 has type 'double'
-C:\Users\ngokh\Documents\GitHub\OpenCLAss2\OpenCLEx\OpenCLEx.c(177,9): warning C4477: 'printf' : format string '%f' requires an argument of type 'double', but variadic argument 2 has type 'int'
-C:\Users\ngokh\Documents\GitHub\OpenCLAss2\OpenCLEx\OpenCLEx.c(184,38): warning C4474: 'printf' : too many arguments passed for format string
-C:\Users\ngokh\Documents\GitHub\OpenCLAss2\OpenCLEx\OpenCLEx.c(184,38): message : placeholders and their parameters expect 0 variadic arguments, but 1 were provided
 C:\Users\ngokh\Documents\GitHub\OpenCLAss2\OpenCLEx\OpenCLEx.c(191,69): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
 C:\Users\ngokh\Documents\GitHub\OpenCLAss2\OpenCLEx\OpenCLEx.c(192,46): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
 C:\Users\ngokh\Documents\GitHub\OpenCLAss2\OpenCLEx\OpenCLEx.c(193,69): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\ngokh\Documents\GitHub\OpenCLAss2\OpenCLEx\OpenCLEx.c(247,16): warning C4244: 'function': conversion from 'float' to 'int', possible loss of data
+C:\Users\ngokh\Documents\GitHub\OpenCLAss2\OpenCLEx\OpenCLEx.c(196,29): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
 C:\Users\ngokh\Documents\GitHub\OpenCLAss2\OpenCLEx\OpenCLEx.c(301,21): warning C4244: 'function': conversion from 'float' to 'int', possible loss of data
 C:\Users\ngokh\Documents\GitHub\OpenCLAss2\OpenCLEx\OpenCLEx.c(314,18): warning C4244: 'function': conversion from 'time_t' to 'unsigned int', possible loss of data
-C:\Users\ngokh\Documents\GitHub\OpenCLAss2\OpenCLEx\OpenCLEx.c(316,27): warning C4305: '=': truncation from 'double' to 'float'
+C:\Users\ngokh\Documents\GitHub\OpenCLAss2\OpenCLEx\OpenCLEx.c(315,35): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+C:\Users\ngokh\Documents\GitHub\OpenCLAss2\OpenCLEx\OpenCLEx.c(317,35): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+C:\Users\ngokh\Documents\GitHub\OpenCLAss2\OpenCLEx\OpenCLEx.c(318,41): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+C:\Users\ngokh\Documents\GitHub\OpenCLAss2\OpenCLEx\OpenCLEx.c(319,38): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+C:\Users\ngokh\Documents\GitHub\OpenCLAss2\OpenCLEx\OpenCLEx.c(320,37): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
 C:\Users\ngokh\Documents\GitHub\OpenCLAss2\OpenCLEx\OpenCLEx.c(324,22): warning C4244: 'function': conversion from 'int' to 'float', possible loss of data
-C:\Users\ngokh\Documents\GitHub\OpenCLAss2\OpenCLEx\OpenCLEx.c(180): warning C4716: 'print': must return a value
-C:\Users\ngokh\Documents\GitHub\OpenCLAss2\OpenCLEx\OpenCLEx.c(186): warning C4716: 'printResult': must return a value
+C:\Users\ngokh\Documents\GitHub\OpenCLAss2\OpenCLEx\OpenCLEx.c(325,22): warning C4244: 'function': conversion from 'int' to 'float', possible loss of data
+C:\Users\ngokh\Documents\GitHub\OpenCLAss2\OpenCLEx\OpenCLEx.c(178): warning C4716: 'print': must return a value
+C:\Users\ngokh\Documents\GitHub\OpenCLAss2\OpenCLEx\OpenCLEx.c(184): warning C4716: 'printResult': must return a value
   OpenCLEx.vcxproj -> C:\Users\ngokh\Documents\GitHub\OpenCLAss2\x64\Debug\OpenCLEx.exe

@@ -41,7 +41,8 @@ int numBoat;
 /* Find a GPU or CPU associated with the first available platform */
 cl_device_id create_device(int type) {
 
-	char device_string[1024];
+	char device_cpu[1024];
+	char device_gpu[1024];
 	cl_platform_id platform;
 	cl_device_id dev;
 	int cpu, gpu, both;
@@ -60,9 +61,9 @@ cl_device_id create_device(int type) {
 				exit(1);
 			}
 			cpu = clGetDeviceIDs(platform, CL_DEVICE_TYPE_CPU, 1, &dev, NULL);
-			clGetDeviceInfo(dev, CL_DEVICE_NAME, sizeof(device_string), &device_string, NULL);
+			clGetDeviceInfo(dev, CL_DEVICE_NAME, sizeof(device_cpu), &device_cpu, NULL);
             printf("\n");
-			printf("Run using Supported CPU: %s!\n", device_string);
+			printf("Run using Supported CPU: %s!\n", device_cpu);
 			break;
 		case 1:
 			gpu = clGetPlatformIDs(1, &platform, NULL);
@@ -75,9 +76,9 @@ cl_device_id create_device(int type) {
 				exit(1);
 			}
 			gpu = clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU, 1, &dev, NULL);
-			clGetDeviceInfo(dev, CL_DEVICE_NAME, sizeof(device_string), &device_string, NULL);
+			clGetDeviceInfo(dev, CL_DEVICE_NAME, sizeof(device_gpu), &device_gpu, NULL);
             printf("\n");
-			printf("Run using Supported GPU: %s!\n", device_string);
+			printf("Run using Supported GPU: %s!\n", device_gpu);
 			break;
 		case 2:
 			both = clGetPlatformIDs(1, &platform, NULL);
@@ -90,6 +91,11 @@ cl_device_id create_device(int type) {
 				exit(1);
 			}
 			both = clGetDeviceIDs(platform, CL_DEVICE_TYPE_ALL, 1, &dev, NULL);
+			cpu = clGetDeviceIDs(platform, CL_DEVICE_TYPE_CPU, 1, &dev, NULL);
+			clGetDeviceInfo(dev, CL_DEVICE_NAME, sizeof(device_cpu), &device_cpu, NULL);
+			gpu = clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU, 1, &dev, NULL);
+			clGetDeviceInfo(dev, CL_DEVICE_NAME, sizeof(device_gpu), &device_gpu, NULL);
+			printf("Run using Supported CPU: %s and GPU: %s!\n", device_cpu, device_gpu);
 			break;
 		default:
 			perror("Couldn't access any devices");
@@ -315,7 +321,7 @@ int main()
 	numBoat = rand() % (400 - 200  + 1) + 200;
     printf("%d boats shooting bullets!\n", numBoat);
 	runSerially();
-	runOpenCL(0, numBoat, velocity, alpha, gama, originalPosition.x, originalPosition.y, originalPosition.z);
+	runOpenCL(2, numBoat, velocity, alpha, gama, originalPosition.x, originalPosition.y, originalPosition.z);
 	runOpenCL(1, numBoat, velocity, alpha, gama, originalPosition.x, originalPosition.y, originalPosition.z);
 
 return 0;
