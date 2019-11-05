@@ -19,7 +19,7 @@
 #ifdef MAC
 #include <OpenCL/opencl.h>
 #else
-//#include <CL/cl.h>
+#include <CL/cl.h>
 #endif
 
 struct Vector3
@@ -35,7 +35,7 @@ struct Vector3 positionBullet;
 float time_used;
 float velocity, velocityH, velocityL, velocityV, alpha, gama, angle;
 float shootTime;
-int numShoot;
+int numBoat;
 
 /* Find a GPU or CPU associated with the first available platform */
 cl_device_id create_device(int type) {
@@ -175,14 +175,14 @@ void Shoot()
 
 int print(int n, float v, float alpha, float gama, float x, float y, float z)
 {
-	printf("Shooting bullet with velocity %f for %d times\n", v, n);
+	printf("%d boats shooting bullet with velocity %f\n", v, n);
 	printf("Vertical angle: %f degree, Horizontal angle: %f degree\n", alpha, gama);
 	printf("Original Position:{%f,%f,%f}\n", x, y, z);
 }
 
 int printResult(int n, float x, float y, float z)
 {
-	printf("%d bullets hit the ground!\n", n);
+	printf("Bullets hit the ground!\n", n);
 	printf("Final Bullet Position:{%f,%f,%f}\n", x, y, z);
 }
 
@@ -211,27 +211,27 @@ int main()
 	velocity = 10;
 	alpha = 70;
 	gama = 50;
-	numShoot = 100000000;
+	numBoat = 100000000;
 	input[0] = 10;
 	input[1] = 0.01;
 	input[2] = 10;
 	input[3] = velocity;
 	input[4] = alpha;
 	input[5] = gama;
-	input[6] = numShoot;
+	input[6] = numBoat;
 	velocityH = velocity * sin(alpha * PI / 180) * cos(gama * PI / 180);
 	velocityV = velocity * cos(alpha * PI / 180);
 	velocityL = velocity * sin(alpha * PI / 180) * sin(gama * PI / 180);
 	start = clock();
-	print(numShoot, velocity, alpha, gama, positionBullet.x, positionBullet.y, positionBullet.z);
-	for (int i = 0; i < numShoot; i++)
+	print(numBoat, velocity, alpha, gama, positionBullet.x, positionBullet.y, positionBullet.z);
+	for (int i = 0; i < numBoat; i++)
 	{
 		while (positionBullet.y > 0)
 		{
 			Shoot();
 		}
 	}
-	printResult(numShoot,positionBullet.x,positionBullet.y,positionBullet.z);
+	printResult(numBoat,positionBullet.x,positionBullet.y,positionBullet.z);
 	end = clock();
 	time_used = ((float)(end - start));
 	
@@ -252,7 +252,7 @@ int main()
 	print(input[6], input[3], input[4], input[5], input[0], input[1], input[2]);
 
 	global_size = 8;
-	local_size = 4;
+	local_size = 1;
 	input_buffer = clCreateBuffer(context, CL_MEM_READ_ONLY |
 		CL_MEM_COPY_HOST_PTR, 7 * sizeof(float), input, &err);
 	output_buffer = clCreateBuffer(context, CL_MEM_READ_WRITE |
@@ -302,7 +302,7 @@ int main()
 	/* Check result */
 	end = clock();
 	time_used = ((float)(end - start));
-	printResult(numShoot, output[0], output[1], output[2]);
+	printResult(numBoat, output[0], output[1], output[2]);
 	printf("Time Used: %f\n", time_used);
 
 	clReleaseKernel(kernel);
