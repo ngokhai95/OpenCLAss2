@@ -32,6 +32,7 @@ struct Vector3
 clock_t start, end;
 struct Vector3 position;
 struct Vector3 positionBullet;
+struct Vector3 originalPosition;
 float time_used;
 float velocity, velocityH, velocityL, velocityV, alpha, gama, angle;
 float shootTime;
@@ -44,8 +45,6 @@ cl_device_id create_device(int type) {
 	cl_platform_id platform;
 	cl_device_id dev;
 	int cpu, gpu, both;
-	
-	
 
 	/* Access a device */
 	switch(type)
@@ -117,7 +116,7 @@ cl_program build_program(cl_context ctx, cl_device_id dev, const char* filename)
 	int err;
 
 	/* Read program file and place content into buffer */
-	program_handle = fopen(filename, "rb");
+	program_handle = fopen(filename, "r");
 	if (program_handle == NULL) {
 		perror("Couldn't find the program file");
 		exit(1);
@@ -186,9 +185,30 @@ int printResult(int n, float x, float y, float z)
 	printf("Final Bullet Position:{%f,%f,%f}\n", x, y, z);
 }
 
-int main() 
+void runSerially()
 {
+	positionBullet = originalPosition;
+	velocityH = velocity * sin(alpha * PI / 180) * cos(gama * PI / 180);
+	velocityV = velocity * cos(alpha * PI / 180);
+	velocityL = velocity * sin(alpha * PI / 180) * sin(gama * PI / 180);
+	start = clock();
+	print(numBoat, velocity, alpha, gama, positionBullet.x, positionBullet.y, positionBullet.z);
+	for (int i = 0; i < numBoat; i++)
+	{
+		while (positionBullet.y > 0)
+		{
+			Shoot();
+		}
+	}
+	printResult(numBoat, positionBullet.x, positionBullet.y, positionBullet.z);
+	end = clock();
+	time_used = ((float)(end - start));
 
+	printf("Time Used: %f\n", time_used);
+}
+
+void runOpenCL(int mode, float numBoat, float velocity, float alpha, float gama, float posX, float posY, float posZ)
+{
 	/* OpenCL structures */
 	cl_device_id device;
 	cl_context context;
@@ -203,41 +223,16 @@ int main()
 	float output[6];
 	cl_mem input_buffer, output_buffer;
 
-	/* Initialize data */
-	srand(time(NULL));
-	positionBullet.x = 10;
-	positionBullet.y = 0.01;
-	positionBullet.z = 10;
-	velocity = 10;
-	alpha = 70;
-	gama = 50;
-	numBoat = 100000000;
-	input[0] = 10;
-	input[1] = 0.01;
-	input[2] = 10;
+	input[0] = posX;
+	input[1] = posY;
+	input[2] = posZ;
 	input[3] = velocity;
 	input[4] = alpha;
 	input[5] = gama;
 	input[6] = numBoat;
-	velocityH = velocity * sin(alpha * PI / 180) * cos(gama * PI / 180);
-	velocityV = velocity * cos(alpha * PI / 180);
-	velocityL = velocity * sin(alpha * PI / 180) * sin(gama * PI / 180);
-	start = clock();
-	print(numBoat, velocity, alpha, gama, positionBullet.x, positionBullet.y, positionBullet.z);
-	for (int i = 0; i < numBoat; i++)
-	{
-		while (positionBullet.y > 0)
-		{
-			Shoot();
-		}
-	}
-	printResult(numBoat,positionBullet.x,positionBullet.y,positionBullet.z);
-	end = clock();
-	time_used = ((float)(end - start));
-	
-	printf("Time Used: %f\n", time_used);
+
 	/* Create device and context */
-	device = create_device(0); //0 = cpu, 1 = gpu, 2 = both.
+	device = create_device(mode);
 	context = clCreateContext(NULL, 1, &device, NULL, NULL, &err);
 	if (err < 0) {
 		perror("Couldn't create a context");
@@ -245,7 +240,7 @@ int main()
 	}
 
 	/* Build program */
-	start = clock();
+
 	program = build_program(context, device, PROGRAM_FILE);
 
 	/* Create data buffer */
@@ -284,6 +279,7 @@ int main()
 		exit(1);
 	}
 	/* Enqueue kernel */
+	start = clock();
 	err = clEnqueueNDRangeKernel(queue, kernel, 1, NULL, &global_size,
 		&local_size, 0, NULL, NULL);
 	if (err < 0) {
@@ -311,5 +307,23 @@ int main()
 	clReleaseCommandQueue(queue);
 	clReleaseProgram(program);
 	clReleaseContext(context);
+}
+
+int main() 
+{
+	srand(time(NULL));
+	originalPosition.x = 10;
+	originalPosition.y = 0.01;
+	originalPosition.z = 10;
+	velocity = 10;
+	alpha = 70;
+	gama = 50;
+	numBoat = 100000000;
+	runSerially();
+	runOpenCL(0, numBoat, velocity, alpha, gama, originalPosition.x, originalPosition.y, originalPosition.z);
+	runOpenCL(1, numBoat, velocity, alpha, gama, originalPosition.x, originalPosition.y, originalPosition.z);
+
 return 0;
 }
+
+
