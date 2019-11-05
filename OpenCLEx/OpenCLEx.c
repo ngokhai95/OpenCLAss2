@@ -187,7 +187,7 @@ void runSerially()
 	velocityL = velocity * sin(alpha * PI / 180) * sin(gama * PI / 180);
 	start = clock();
 	print(velocity, alpha, gama, positionBullet.x, positionBullet.y, positionBullet.z);
-    numBoat = pow(numBoat,5);
+    numBoat = pow(numBoat,3);
 	for (int i = 0; i < numBoat; i++)
 	{
 		while (positionBullet.y > 0)
@@ -312,7 +312,7 @@ int main()
 	velocity = rand() % (100 - 50 + 1) + 50;
 	alpha = rand() % (170 - 10 + 1) + 10;
 	gama = rand() % (170 - 10 + 1) + 10;
-	numBoat = rand() % (35 - 25 + 1) + 25;
+	numBoat = rand() % (400 - 200  + 1) + 200;
     printf("%d boats shooting bullets!\n", numBoat);
 	runSerially();
 	runOpenCL(0, numBoat, velocity, alpha, gama, originalPosition.x, originalPosition.y, originalPosition.z);
