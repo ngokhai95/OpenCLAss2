@@ -19,7 +19,6 @@
 #ifdef MAC
 #else
 #include <CL/cl.h>
-#include <CL/cl.h>
 #endif
 
 struct Vector3
@@ -63,29 +62,29 @@ cl_device_id create_device(int type) {
 	switch(type)
 	{
 		case 0:
-			cpu = clGetDeviceIDs(platform, CL_DEVICE_TYPE_CPU, 1, &dev, NULL);
-			//clGetDeviceInfo(dev, CL_DEVICE_NAME, sizeof(device_string), &device_string, NULL);
-			//printf("OpenCL Supported CPU: %s\n", device_string);
 			if (cpu < 0) {
 				perror("Couldn't access CPU");
 				exit(1);
 			}
+			cpu = clGetDeviceIDs(platform, CL_DEVICE_TYPE_CPU, 2, &dev, NULL);
+			//clGetDeviceInfo(dev, CL_DEVICE_NAME, sizeof(device_string), &device_string, NULL);
+			//printf("OpenCL Supported CPU: %s\n", device_string);
 			break;
 		case 1:
-			gpu = clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU, 1, &dev, NULL);
-			//clGetDeviceInfo(dev, CL_DEVICE_NAME, sizeof(device_string), &device_string, NULL);
-			//printf("OpenCL Supported GPU: %s\n", device_string);
 			if (gpu < 0) {
 				perror("Couldn't access GPU");
 				exit(1);
 			}
+			gpu = clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU, 2, &dev, NULL);
+			clGetDeviceInfo(dev, CL_DEVICE_NAME, sizeof(device_string), &device_string, NULL);
+			printf("OpenCL Supported GPU: %s\n", device_string);
 			break;
 		case 2:
-			both = clGetDeviceIDs(platform, CL_DEVICE_TYPE_ALL, 1, &dev, NULL);
 			if (both < 0) {
 				perror("Couldn't access CPU and GPU");
 				exit(1);
 			}
+			both = clGetDeviceIDs(platform, CL_DEVICE_TYPE_ALL, 2, &dev, NULL);
 			break;
 		default:
 			perror("Couldn't access any devices");
