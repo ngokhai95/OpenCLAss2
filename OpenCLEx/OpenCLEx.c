@@ -95,6 +95,7 @@ cl_device_id create_device(int type) {
 			clGetDeviceInfo(dev, CL_DEVICE_NAME, sizeof(device_cpu), &device_cpu, NULL);
 			gpu = clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU, 1, &dev, NULL);
 			clGetDeviceInfo(dev, CL_DEVICE_NAME, sizeof(device_gpu), &device_gpu, NULL);
+            printf("\n");
 			printf("Run using Supported CPU: %s and GPU: %s!\n", device_cpu, device_gpu);
 			break;
 		default:
@@ -315,14 +316,15 @@ int main()
 	originalPosition.x = rand() % 100;
 	originalPosition.y = (float)(rand() % 10 + 1) / 100;
 	originalPosition.z = rand() % 100;
-	velocity = rand() % (100 - 50 + 1) + 50;
+	velocity = rand() % 15  + 1;
 	alpha = rand() % (170 - 10 + 1) + 10;
 	gama = rand() % (170 - 10 + 1) + 10;
 	numBoat = rand() % (400 - 200  + 1) + 200;
     printf("%d boats shooting bullets!\n", numBoat);
 	runSerially();
-	runOpenCL(2, numBoat, velocity, alpha, gama, originalPosition.x, originalPosition.y, originalPosition.z);
+	runOpenCL(0, numBoat, velocity, alpha, gama, originalPosition.x, originalPosition.y, originalPosition.z);
 	runOpenCL(1, numBoat, velocity, alpha, gama, originalPosition.x, originalPosition.y, originalPosition.z);
+    runOpenCL(2, numBoat, velocity, alpha, gama, originalPosition.x, originalPosition.y, originalPosition.z);
 
 return 0;
 }
