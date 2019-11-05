@@ -43,48 +43,51 @@ cl_device_id create_device(int type) {
 	cl_platform_id platform;
 	cl_device_id dev;
 	int cpu, gpu, both;
-	cpu = clGetPlatformIDs(1, &platform, NULL);
-	if (cpu < 0) {
-		perror("Couldn't identify a platform");
-		exit(1);
-	}
-	gpu = clGetPlatformIDs(1, &platform, NULL);
-	if (gpu < 0) {
-		perror("Couldn't identify a platform");
-		exit(1);
-	}
-	both = clGetPlatformIDs(1, &platform, NULL);
-	if (both < 0) {
-		perror("Couldn't identify a platform");
-		exit(1);
-	}
+	
+	
+
 	/* Access a device */
 	switch(type)
 	{
 		case 0:
+			cpu = clGetPlatformIDs(1, &platform, NULL);
+			if (cpu < 0) {
+				perror("Couldn't identify a platform");
+				exit(1);
+			}
 			if (cpu < 0) {
 				perror("Couldn't access CPU");
 				exit(1);
 			}
-			cpu = clGetDeviceIDs(platform, CL_DEVICE_TYPE_CPU, 2, &dev, NULL);
-			//clGetDeviceInfo(dev, CL_DEVICE_NAME, sizeof(device_string), &device_string, NULL);
-			//printf("OpenCL Supported CPU: %s\n", device_string);
+			cpu = clGetDeviceIDs(platform, CL_DEVICE_TYPE_CPU, 1, &dev, NULL);
+			clGetDeviceInfo(dev, CL_DEVICE_NAME, sizeof(device_string), &device_string, NULL);
+			printf("OpenCL Supported CPU: %s\n", device_string);
 			break;
 		case 1:
+			gpu = clGetPlatformIDs(1, &platform, NULL);
+			if (gpu < 0) {
+				perror("Couldn't identify a platform");
+				exit(1);
+			}
 			if (gpu < 0) {
 				perror("Couldn't access GPU");
 				exit(1);
 			}
-			gpu = clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU, 2, &dev, NULL);
+			gpu = clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU, 1, &dev, NULL);
 			clGetDeviceInfo(dev, CL_DEVICE_NAME, sizeof(device_string), &device_string, NULL);
 			printf("OpenCL Supported GPU: %s\n", device_string);
 			break;
 		case 2:
+			both = clGetPlatformIDs(1, &platform, NULL);
+			if (both < 0) {
+				perror("Couldn't identify a platform");
+				exit(1);
+			}
 			if (both < 0) {
 				perror("Couldn't access CPU and GPU");
 				exit(1);
 			}
-			both = clGetDeviceIDs(platform, CL_DEVICE_TYPE_ALL, 2, &dev, NULL);
+			both = clGetDeviceIDs(platform, CL_DEVICE_TYPE_ALL, 1, &dev, NULL);
 			break;
 		default:
 			perror("Couldn't access any devices");
